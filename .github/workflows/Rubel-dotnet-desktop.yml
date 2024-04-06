@@ -6,9 +6,11 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  # ability to run the script in manual mode
+  workflow_dispatch:
 jobs:
   build:
-    #operating system
+    # operating system
     runs-on: windows-latest
     strategy:
       matrix:
@@ -19,34 +21,17 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    # Install the software
+    # software
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    # Download dependencies
+    # download dependencies
     - name: Restore Dependencies
       run: dotnet restore
-    # Create a project build 
+    # project build 
     - name: Build Project
       run: dotnet build --configuration Release --no-restore
-    # Run unit tests
+    # unit tests
     - name: Run Unit Tests
       run: dotnet test --no-build --verbosity normal
-  # Ability to run the script in manual mode
-  manual:
-    runs-on: windows-latest
-    needs: build
-    steps:
-    - name: Manual Intervention
-      if: github.event_name == 'workflow_dispatch'
-      uses: actions/github-script@v5
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const response = await github.actions.createWorkflowDispatch({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            workflow_id: 'Rubel-dotnet-desktop.yml'
-          });
-          console.log(response);
