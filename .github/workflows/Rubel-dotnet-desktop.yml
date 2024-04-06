@@ -1,5 +1,5 @@
 # Yurii Rubel workflow
-name: .Net/C#
+name: .Net/C# (CI/GITHUB_ACTIONS)
 on:
   #trigger on the push event
   push:
