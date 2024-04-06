@@ -1,0 +1,52 @@
+# Yurii Rubel workflow
+name: .Net/C#
+on:
+  #trigger on the push event
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:
+  build:
+    #operating system
+    runs-on: windows-latest
+    strategy:
+      matrix:
+         configuration: [Debug, Release]
+    env:
+      Solution_Name: Products.sln                         
+      Test_Project_Path: Products.csproj                
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    # Install the software
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    # Download dependencies
+    - name: Restore Dependencies
+      run: dotnet restore
+    # Create a project build 
+    - name: Build Project
+      run: dotnet build --configuration Release --no-restore
+    # Run unit tests
+    - name: Run Unit Tests
+      run: dotnet test --no-build --verbosity normal
+  # Ability to run the script in manual mode
+  manual:
+    runs-on: windows-latest
+    needs: build
+    steps:
+    - name: Manual Intervention
+      if: github.event_name == 'workflow_dispatch'
+      uses: actions/github-script@v5
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const response = await github.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'Rubel-dotnet-desktop.yml'
+          });
+          console.log(response);
