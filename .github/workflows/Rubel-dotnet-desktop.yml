@@ -6,6 +6,7 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+    types: [opened, synchronize]
   # ability to run the script in manual mode
   workflow_dispatch:
 jobs:
@@ -14,10 +15,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-         configuration: [Debug, Release]
-    env:
-      Solution_Name: Products.sln                         
-      Test_Project_Path: Products.csproj                
+         configuration: [Debug, Release]         
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
